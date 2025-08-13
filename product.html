@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تفاصيل المنتج - صيدلية أونلاين</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+  <header class="container header">
+    <div class="brand">
+      <a href="index.html" class="logo">💊 صيدلية أونلاين</a>
+    </div>
+    <nav class="nav">
+      <a href="index.html">الرئيسية</a>
+      <a href="cart.html" class="cart-link">السلة (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div id="product-view" class="product-view card"></div>
+  </main>
+
+  <footer class="container footer">
+    <p class="copy">© 2025 صيدلية أونلاين</p>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script>
+    const fmt = new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' });
+    function getCart(){return JSON.parse(localStorage.getItem('cart')||'[]')}
+    function setCart(c){localStorage.setItem('cart', JSON.stringify(c)); document.getElementById('cart-count').textContent=c.reduce((t,i)=>t+i.qty,0)}
+    setCart(getCart())
+
+    const url = new URLSearchParams(location.search);
+    const id = url.get('id');
+    const p = window.PRODUCTS.find(x=> String(x.id) === String(id));
+    const el = document.getElementById('product-view');
+
+    if(!p){
+      el.innerHTML = '<p>لم يتم العثور على المنتج.</p>';
+    } else {
+      el.innerHTML = `
+      <div class="prod">
+        <div class="prod-img"><img alt="${p.title}" src="${p.image||'assets/img/placeholder.png'}"/></div>
+        <div class="prod-info">
+          <h1>${p.title}</h1>
+          ${p.rx_required ? '<div class="rx-badge">⚠️ هذا المنتج قد يتطلب وصفة طبية</div>':''}
+          <p class="price">${fmt.format(p.price)}</p>
+          <p>${p.description||''}</p>
+
+          <div class="tabs">
+            <details open><summary>المكوّن الفعّال</summary><div>${p.active_ingredient||'-'}</div></details>
+            <details><summary>الجرعة</summary><div>${p.dosage||'-'}</div></details>
+            <details><summary>التحذيرات</summary><div>${p.warnings||'-'}</div></details>
+            <details><summary>الشكل الدوائي</summary><div>${p.dosage_form||'-'}</div></details>
+          </div>
+
+          <div class="actions">
+            <button id="add">إضافة إلى السلة</button>
+            <a class="ghost" href="https://wa.me/0000000000?text=استفسار%20عن%20${encodeURIComponent(p.title)}" target="_blank">💬 استشر الصيدلي</a>
+          </div>
+        </div>
+      </div>`;
+
+      document.getElementById('add').onclick = () => {
+        const cart = getCart();
+        const i = cart.findIndex(x=>x.id===p.id);
+        if(i>-1) cart[i].qty += 1; else cart.push({id:p.id, title:p.title, price:p.price, qty:1});
+        setCart(cart);
+        alert('تمت إضافة المنتج إلى السلة');
+      };
+    }
+  </script>
+</body>
+</html>

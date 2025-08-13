@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>السلة - صيدلية أونلاين</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+  <header class="container header">
+    <div class="brand">
+      <a href="index.html" class="logo">💊 صيدلية أونلاين</a>
+    </div>
+    <nav class="nav">
+      <a href="index.html">الرئيسية</a>
+      <a href="cart.html" class="cart-link">السلة (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>السلة</h1>
+    <div id="cart"></div>
+    <div class="checkout card">
+      <h3>إتمام الطلب</h3>
+      <label>الاسم الكامل <input id="name" type="text" required></label>
+      <label>الهاتف <input id="phone" type="tel" required></label>
+      <label>العنوان <input id="address" type="text" required></label>
+      <label>طريقة الدفع
+        <select id="payment">
+          <option value="cod">الدفع عند الاستلام (COD)</option>
+          <option value="card" disabled>بطاقة (قريبًا)</option>
+        </select>
+      </label>
+      <button id="place">تأكيد الطلب</button>
+      <p class="note">تنبيه: بعض المنتجات قد تتطلب وصفة طبية. سيتواصل معك الصيدلي عند الحاجة.</p>
+    </div>
+  </main>
+
+  <footer class="container footer">
+    <p class="copy">© 2025 صيدلية أونلاين</p>
+  </footer>
+
+  <script>
+    const fmt = new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' });
+    function getCart(){return JSON.parse(localStorage.getItem('cart')||'[]')}
+    function setCart(c){localStorage.setItem('cart', JSON.stringify(c)); document.getElementById('cart-count').textContent=c.reduce((t,i)=>t+i.qty,0)}
+    function render(){
+      const wrap = document.getElementById('cart');
+      const cart = getCart();
+      setCart(cart);
+      if(cart.length===0){ wrap.innerHTML = '<p>السلة فارغة.</p>'; return; }
+      let html = '<div class="card table"><div class="row head"><div>المنتج</div><div>الكمية</div><div>السعر</div><div>الإجمالي</div><div></div></div>';
+      let total = 0;
+      cart.forEach((it,idx)=>{
+        const sub = it.price*it.qty; total += sub;
+        html += `<div class="row"><div>${it.title}</div>
+        <div class="qty">
+          <button data-i="${idx}" data-a="-1">-</button>
+          <span>${it.qty}</span>
+          <button data-i="${idx}" data-a="1">+</button>
+        </div>
+        <div>${fmt.format(it.price)}</div>
+        <div>${fmt.format(sub)}</div>
+        <div><button data-i="${idx}" data-del="1">حذف</button></div></div>`;
+      });
+      html += `<div class="row foot"><div></div><div></div><div>المجموع</div><div>${fmt.format(total)}</div><div></div></div></div>`;
+      document.getElementById('cart').innerHTML = html;
+      document.querySelectorAll('button[data-a]').forEach(b=> b.onclick = e=>{
+        const i = +e.target.dataset.i; const a = +e.target.dataset.a;
+        const c = getCart(); c[i].qty = Math.max(1, c[i].qty + a); setCart(c); render();
+      });
+      document.querySelectorAll('button[data-del]').forEach(b=> b.onclick = e=>{
+        const i = +e.target.dataset.i; const c = getCart(); c.splice(i,1); setCart(c); render();
+      });
+    }
+    render();
+    document.getElementById('place').onclick = () => {
+      const cart = getCart();
+      if(cart.length===0){ alert('السلة فارغة'); return; }
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const payment = document.getElementById('payment').value;
+      if(!name || !phone || !address){ alert('يرجى إدخال البيانات'); return; }
+      // هذه هي النقطة المناسبة لربط API فعلي للدفع/الطلبات
+      const order = {name, phone, address, payment, items: cart, createdAt: new Date().toISOString()};
+      console.log('ORDER', order);
+      localStorage.removeItem('cart');
+      alert('تم استلام طلبك! سيتواصل معك فريقنا للتأكيد.');
+      location.href = 'index.html';
+    };
+  </script>
+</body>
+</html>
