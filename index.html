@@ -1,48 +1,49 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صيدلية - منتجات</title>
+    <title>صيدلية لطفي</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+    <script>
+        (function(){
+            emailjs.init("NFl82aaLTB_YeWrdZ"); /* ✅ Public Key */
+        })();
+    </script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>صيدليتك</h1>
-        <input type="text" id="searchBar" placeholder="ابحث باسم الدواء...">
-        <div class="categories">
-            <button onclick="filterCategory('all')">الكل</button>
-            <button onclick="filterCategory('medicine')">أدوية</button>
-            <button onclick="filterCategory('vitamins')">فيتامينات</button>
-            <button onclick="filterCategory('devices')">أجهزة طبية</button>
-        </div>
-    </header>
-    <main id="productList">
-        <!-- أمثلة منتجات -->
-        <div class="product" data-category="medicine">
-            <span class="badge best-seller">الأكثر مبيعًا</span>
-            <img src="https://i.imgur.com/xZLhW0V.jpg" alt="Panadol Extra - بنادول إكسترا">
-            <h3>بنادول إكسترا - Panadol Extra</h3>
-            <p class="price"><span class="old-price">40</span> 35 جنيه</p>
-            <a class="buy-btn" href="https://wa.me/201211630677?text=أرغب%20في%20شراء%20بنادول%20إكسترا" target="_blank">اطلب الآن</a>
-        </div>
 
-        <div class="product" data-category="vitamins">
-            <img src="https://i.imgur.com/bGZb3pS.jpg" alt="Vitamin C 1000mg - فيتامين سي">
-            <h3>فيتامين سي - Vitamin C 1000mg</h3>
-            <p class="price">80 جنيه</p>
-            <a class="buy-btn" href="https://wa.me/201211630677?text=أرغب%20في%20شراء%20فيتامين%20سي" target="_blank">اطلب الآن</a>
-        </div>
+<header>
+    <h1>صيدلية لطفي</h1>
+</header>
 
-        <div class="product" data-category="devices">
-            <span class="badge sale">خصم</span>
-            <img src="https://i.imgur.com/yVb4H2x.jpg" alt="Digital Thermometer - ترمومتر ديجيتال">
-            <h3>ترمومتر ديجيتال - Digital Thermometer</h3>
-            <p class="price"><span class="old-price">150</span> 120 جنيه</p>
-            <a class="buy-btn" href="https://wa.me/201211630677?text=أرغب%20في%20شراء%20ترمومتر%20ديجيتال" target="_blank">اطلب الآن</a>
-        </div>
-    </main>
-    <script src="script.js"></script>
+<section id="search">
+    <input type="text" id="searchInput" placeholder="ابحث عن المنتج...">
+</section>
+
+<section id="products">
+    <h2>منتجاتنا</h2>
+    <div class="product-grid" id="product-list">
+        <!-- المنتجات تضاف من الجافاسكربت -->
+    </div>
+</section>
+
+<section id="cart">
+    <h2>سلة المشتريات (<span id="cart-count">0</span>)</h2>
+    <ul id="cart-items"></ul>
+    <p>الإجمالي: <span id="cart-total">0</span> ريال</p>
+
+    <h3>بيانات المشتري</h3>
+    <form id="orderForm">
+        <input type="text" id="buyer_name" placeholder="الاسم" required>
+        <input type="text" id="buyer_phone" placeholder="الهاتف" required>
+        <input type="email" id="buyer_email" placeholder="البريد الإلكتروني" required>
+        <input type="text" id="buyer_address" placeholder="العنوان" required>
+        <button type="submit">إرسال الطلب</button>
+    </form>
+</section>
+
 </body>
 </html>
